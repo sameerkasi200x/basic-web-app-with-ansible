@@ -1,0 +1,16 @@
+    - name: Install all required dependencies
+      yum: name={{ item }} state=installed
+      with_items:
+         - python
+         - python-setuptools
+         - python-devel
+         - git
+         - gcc
+      become: true
+ 
+    - name: Install Python Libraries
+      easy_install: 
+         name: pip
+         state: present
+      become: true
+

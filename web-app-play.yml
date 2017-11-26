@@ -22,14 +22,17 @@
   roles:
     - create-ec2
 
+- name: Setup Python Dependencies
+  hosts: db_server, web_server
+  roles:
+    - python_dependencies
+
 - name: Setup DB Server
   hosts: db_server
   roles:
-    - python_dependencies
     - mariadb 
 
 - name: Setup Web Server
   hosts: web_server
   roles:
-    - python_dependencies
     - flask_app

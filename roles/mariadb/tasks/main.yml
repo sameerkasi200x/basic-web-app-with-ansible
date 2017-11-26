@@ -1,0 +1,32 @@
+    - include: deploy_mysql_python_connector.yml
+    - name: Install MySQL DB
+      yum: name={{ item }} state=installed
+      with_items:
+         - mariadb
+         - mariadb-server
+         - mysql-devel
+      become: true
+
+    - name: Start MariaDB
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+      become: true
+
+    - name: Create Application DB
+      mysql_db: 
+        name: employee_db 
+        state: present
+        login_user: root
+
+    - name: Create Db user
+      mysql_user:
+        name: db_user
+        login_user: root
+        password: Passw0rd
+        priv: '*.*:ALL:'
+        state: present
+        host: '%'
+    
+

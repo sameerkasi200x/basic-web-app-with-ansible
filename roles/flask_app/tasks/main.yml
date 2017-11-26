@@ -1,0 +1,10 @@
+    - include: flask_depencies.yml
+    - name: Get the codebase
+      git: 
+        repo: "{{ code_repo }}"
+        dest: "{{ code_destination }}"
+      become: true
+
+    - name: Start the Web Server
+      shell: FLASK_APP="{{ flask_app }}" nohup flask run --host=0.0.0.0 &
+

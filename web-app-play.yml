@@ -1,68 +1,35 @@
-- name: Deploy a web application
-  hosts: db_and_web_server1
-  become_method: sudo
-  tasks:
-    - name: Install all required dependencies
-      yum: name={{ item }} state=installed
-      with_items:
-         - python
-         - python-setuptools
-         - python-devel
-         - git
-         - gcc
-      become: true
- 
-    - name: Install Python Libraries
-      easy_install: 
-         name: pip
-         state: present
-      become: true
+- name: Create a DB server using EC2 module
+  hosts: localhost
+  connection: local
+  vars:
+    ami: ami-1fbad07c
+    sec_group: sg-77602e11
+    region: ap-southeast-1
+    subnet: subnet-9d05befa
+    server: db_server
+  roles:
+    - create-ec2 
 
-    - name: Install MySQL DB
-      yum: name={{ item }} state=installed
-      with_items:
-         - mariadb
-         - mariadb-server
-         - mysql-devel
-      become: true
+- name: Create a Web server using EC2 module
+  hosts: localhost
+  connection: local
+  vars:
+    ami: ami-1fbad07c
+    sec_group: sg-77602e11
+    region: ap-southeast-1
+    subnet: subnet-9d05befa
+    server: web_server
+  roles:
+    - create-ec2
 
-    - name: Start MariaDB
-      service:
-        name: mariadb
-        state: started
-        enabled: yes
-      become: true
+- name: Setup DB Server
+  hosts: db_server
+  roles:
+    - python_dependencies
+    - mariadb 
 
-    - name: Install Python Dependencies
-      pip:
-        name: '{{ item }}'
-        state: present
-      with_items:
-        - flask
-        - flask-mysql
-        - MySQL-python
-      become: true
-
-    - name: Create Application DB
-      mysql_db: 
-        name: employee_db 
-        state: present
-        login_user: root
-
-    - name: Create Db user
-      mysql_user:
-        name: db_user
-        login_user: root
-        password: Passw0rd
-        priv: '*.*:ALL:'
-        state: present
-    
-
-    - name: Get the codebase
-      git: 
-        repo: git://github.com/mmumshad/simple-webapp-flask.git
-        dest: /opt
-      become: true
-
-    - name: Start the Web Server
-      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+- name: Setup Web Server
+  hosts: web_server
+  roles:
+    - python_dependencies
+    - flask_app

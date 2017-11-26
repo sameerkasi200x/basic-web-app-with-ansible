@@ -1,5 +1,0 @@
-    - name: Get the codebase
-      git: 
-        repo: "{{ code_repo }}"
-        dest: "{{ code_destination }}"
-      become: true

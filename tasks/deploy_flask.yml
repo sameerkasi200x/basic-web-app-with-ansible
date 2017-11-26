@@ -1,8 +1,0 @@
-    - name: Install Flask Dependencies
-      pip:
-        name: '{{ item }}'
-        state: present
-      with_items:
-        - flask
-        - flask-mysql
-      become: true

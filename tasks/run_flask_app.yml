@@ -1,3 +1,0 @@
-    - name: Start the Web Server
-      shell: FLASK_APP="{{ flask_app }}" nohup flask run --host=0.0.0.0 &
-
